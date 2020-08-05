@@ -99,6 +99,39 @@ public class UserControllerTest {
 
     }
 
+    @Test
+    @DisplayName("[CREATE] - Should show exceptions in create an invalid user")
+    public void createInvalidUserWithNameTest() throws Exception {
+
+        UserDTO dto =  UserDTO.builder()
+                .email(createNewUserValid().getEmail())
+                .password(createNewUserValid().getPassword())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .build();
+
+        User savedUser = User.builder()
+                .id(1L)
+                .email(createNewUserValid().getEmail())
+                .password(createNewUserValid().getPassword())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .build();
+
+        given(service.save(Mockito.any(User.class))).willReturn(savedUser);
+
+        String json = mapper.writeValueAsString(dto);
+        MockHttpServletRequestBuilder request = post(USER_API)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("name is required"));
+
+
+    }
+
 
     private UserDTO createNewUserValid() {
         return UserDTO.builder()
