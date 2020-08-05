@@ -26,6 +26,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.Month;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,19 +52,14 @@ public class UserControllerTest {
     @Test
     @DisplayName("[CREATE] - Must create an invalid user")
     public void createValidUserTest() throws Exception {
-        UserDTO dto = UserDTO.builder()
-                .name("Phellipe Rodrigues")
-                .email("phelliperodrigues.dev@gmail.com")
-                .password("12345")
-                .passwordConfirmation("12345")
-                .build();
+        UserDTO dto = createNewUserValid();
 
         User savedUser = User.builder()
                 .id(1L)
-                .name("Phellipe Rodrigues")
-                .email("phelliperodrigues.dev@gmail.com")
-                .password("12345")
-                .passwordConfirmation("12345")
+                .name(createNewUserValid().getName())
+                .email(createNewUserValid().getEmail())
+                .password(createNewUserValid().getPassword())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
                 .build();
 
         given(service.save(Mockito.any(User.class))).willReturn(savedUser);
@@ -82,10 +78,35 @@ public class UserControllerTest {
                 .andExpect( jsonPath("name").value(dto.getName()))
                 .andExpect(jsonPath("email").value(dto.getEmail()));
     }
+
+
+
     @Test
-    @DisplayName("[CREATE] - You should not create an invalid user")
+    @DisplayName("[CREATE] - Should show exceptions in create an invalid user")
     public void createInvalidUserTest() throws Exception {
 
+        String json = mapper.writeValueAsString(new UserDTO());
+
+        MockHttpServletRequestBuilder request = post(USER_API)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(4)));
+
+
+    }
+
+
+    private UserDTO createNewUserValid() {
+        return UserDTO.builder()
+                .name("Phellipe Rodrigues")
+                .email("phelliperodrigues.dev@gmail.com")
+                .password("12345")
+                .passwordConfirmation("12345")
+                .build();
     }
 
 }
