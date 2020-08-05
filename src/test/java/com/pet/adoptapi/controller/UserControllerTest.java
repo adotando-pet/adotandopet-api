@@ -100,8 +100,8 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("[CREATE] - Should show exceptions in create an invalid user")
-    public void createInvalidUserWithNameTest() throws Exception {
+    @DisplayName("[CREATE] - Should show message exceptions that name required")
+    public void createInvalidUserWithoutNameTest() throws Exception {
 
         UserDTO dto =  UserDTO.builder()
                 .email(createNewUserValid().getEmail())
@@ -128,6 +128,39 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errors", hasSize(1)))
                 .andExpect(jsonPath("errors[0]").value("name is required"));
+
+
+    }
+
+    @Test
+    @DisplayName("[CREATE] - Should show message exceptions that email required")
+    public void createInvalidUserWithoutEmailTest() throws Exception {
+
+        UserDTO dto =  UserDTO.builder()
+                .name(createNewUserValid().getName())
+                .password(createNewUserValid().getPassword())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .build();
+
+        User savedUser = User.builder()
+                .id(1L)
+                .name(createNewUserValid().getName())
+                .password(createNewUserValid().getPassword())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .build();
+
+        given(service.save(Mockito.any(User.class))).willReturn(savedUser);
+
+        String json = mapper.writeValueAsString(dto);
+        MockHttpServletRequestBuilder request = post(USER_API)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("email is required"));
 
 
     }
