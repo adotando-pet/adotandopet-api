@@ -14,7 +14,7 @@ public class UserDTO {
 
     private Long id;
 
-    @NotEmpty
+    @NotEmpty(message = "name is required")
     private String name;
     @NotEmpty
     private String email;
@@ -22,5 +22,6 @@ public class UserDTO {
     private String password;
     @NotEmpty
     private String passwordConfirmation;
+
 
 }
