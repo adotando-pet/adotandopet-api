@@ -20,7 +20,7 @@ public class UserDTO {
     private String email;
     @NotEmpty(message = "password is required")
     private String password;
-    @NotEmpty
+    @NotEmpty(message = "passwordConfirmation is required")
     private String passwordConfirmation;
 
 

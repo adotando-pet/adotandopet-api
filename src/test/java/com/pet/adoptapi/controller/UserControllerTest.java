@@ -204,14 +204,14 @@ public class UserControllerTest {
         UserDTO dto =  UserDTO.builder()
                 .name(createNewUserValid().getName())
                 .email(createNewUserValid().getEmail())
-                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .password(createNewUserValid().getPassword())
                 .build();
 
         User savedUser = User.builder()
                 .id(1L)
                 .name(createNewUserValid().getName())
                 .email(createNewUserValid().getEmail())
-                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .password(createNewUserValid().getPassword())
                 .build();
 
         given(service.save(Mockito.any(User.class))).willReturn(savedUser);
