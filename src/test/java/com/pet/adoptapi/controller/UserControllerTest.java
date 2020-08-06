@@ -2,6 +2,7 @@ package com.pet.adoptapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet.adoptapi.dto.UserDTO;
+import com.pet.adoptapi.exception.BusinessException;
 import com.pet.adoptapi.model.User;
 import com.pet.adoptapi.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +51,7 @@ public class UserControllerTest {
     ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    @DisplayName("[CREATE] - Must create an invalid user")
+    @DisplayName("[CREATE] - Should create an invalid user")
     public void createValidUserTest() throws Exception {
         UserDTO dto = createNewUserValid();
 
@@ -227,6 +228,26 @@ public class UserControllerTest {
                 .andExpect(jsonPath("errors", hasSize(1)))
                 .andExpect(jsonPath("errors[0]").value("passwordConfirmation is required"));
 
+
+    }
+
+    @Test
+    @DisplayName("[CREATE] - Should show exception with EMAIL duplicate")
+    public void createValidUserWithEmailDuplicateTest() throws Exception{
+        UserDTO dto = createNewUserValid();
+        String json = mapper.writeValueAsString(dto);
+        String messageError = "Email já cadastrado.";
+        given(service.save(Mockito.any(User.class))).willThrow(new BusinessException(messageError));
+
+        MockHttpServletRequestBuilder request = post(USER_API)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value(messageError));
 
     }
 
