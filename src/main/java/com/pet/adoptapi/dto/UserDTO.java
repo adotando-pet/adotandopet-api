@@ -18,7 +18,7 @@ public class UserDTO {
     private String name;
     @NotEmpty(message = "email is required")
     private String email;
-    @NotEmpty
+    @NotEmpty(message = "password is required")
     private String password;
     @NotEmpty
     private String passwordConfirmation;
