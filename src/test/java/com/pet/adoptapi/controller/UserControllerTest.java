@@ -251,6 +251,36 @@ public class UserControllerTest {
 
     }
 
+    @Test
+    @DisplayName("[CREATE] - Should not return password and passwordConfirmation")
+    public void dontReturnPasswordAndPasswordConfirmationTest() throws Exception {
+        UserDTO dto = createNewUserValid();
+
+        User savedUser = User.builder()
+                .id(1L)
+                .name(createNewUserValid().getName())
+                .email(createNewUserValid().getEmail())
+                .password(createNewUserValid().getPassword())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .build();
+
+        given(service.save(Mockito.any(User.class))).willReturn(savedUser);
+
+        String json = mapper.writeValueAsString(dto);
+
+        MockHttpServletRequestBuilder request = post(USER_API)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .content(json);
+
+        mvc
+                .perform(request)
+                .andExpect(status().isCreated())
+                .andExpect( jsonPath("id").isNotEmpty())
+                .andExpect( jsonPath("password").doesNotExist())
+                .andExpect(jsonPath("passwordConfirmation").doesNotExist());
+    }
+
     private UserDTO createNewUserValid() {
         return UserDTO.builder()
                 .name("Phellipe Rodrigues")
