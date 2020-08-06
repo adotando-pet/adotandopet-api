@@ -197,6 +197,38 @@ public class UserControllerTest {
 
 
     }
+    @Test
+    @DisplayName("[CREATE] - Should show message exceptions that passwordConfirmation required")
+    public void createInvalidUserWithoutPasswordConfirmationTest() throws Exception {
+
+        UserDTO dto =  UserDTO.builder()
+                .name(createNewUserValid().getName())
+                .email(createNewUserValid().getEmail())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .build();
+
+        User savedUser = User.builder()
+                .id(1L)
+                .name(createNewUserValid().getName())
+                .email(createNewUserValid().getEmail())
+                .passwordConfirmation(createNewUserValid().getPasswordConfirmation())
+                .build();
+
+        given(service.save(Mockito.any(User.class))).willReturn(savedUser);
+
+        String json = mapper.writeValueAsString(dto);
+        MockHttpServletRequestBuilder request = post(USER_API)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("passwordConfirmation is required"));
+
+
+    }
 
     private UserDTO createNewUserValid() {
         return UserDTO.builder()
