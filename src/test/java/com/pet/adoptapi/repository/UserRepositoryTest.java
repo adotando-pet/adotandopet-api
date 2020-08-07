@@ -40,4 +40,27 @@ public class UserRepositoryTest {
                 .passwordConfirmation("123456")
                 .build();
     }
+
+    @Test
+    @DisplayName("[SAVE] - Should return false if not already exists email User ")
+    public void saveReturnFalseExistsEmail(){
+        String email = "phelliperodrigues.dev@gmail.com";
+
+        boolean exists = repository.existsByEmail(email);
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("[SAVE] - Should return true if already exists email User ")
+    public void saveReturnTrueIfAlreadyExistsEmail(){
+        String email = "phelliperodrigues.dev@gmail.com";
+
+        User user = createUserValid();
+        entityManager.persist(user);
+
+        boolean exists = repository.existsByEmail(email);
+
+        assertThat(exists).isTrue();
+    }
 }
