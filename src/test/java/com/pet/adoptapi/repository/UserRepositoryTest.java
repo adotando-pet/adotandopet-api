@@ -23,7 +23,7 @@ public class UserRepositoryTest {
 
     @Test
     @DisplayName("[SAVE] - Should save a user")
-    public void saveNewBook(){
+    public void saveNewUser(){
         User user = createUserValid();
 
         User savedUser = repository.save(user);
